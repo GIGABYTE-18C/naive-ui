@@ -56,6 +56,10 @@ export interface InternalSelectMenuInjection {
 export interface InternalExposedProps {
   selfRef: Ref<HTMLElement | null>
   getPendingTmNode: () => TreeNode<SelectBaseOption> | null
+  setPendingTmNode: (
+    tmNode: TreeNode<SelectBaseOption> | null,
+    doScroll?: boolean
+  ) => void
   prev: () => void
   next: () => void
 }

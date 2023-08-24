@@ -9,6 +9,10 @@
 
 <p align="center">English | <a href="README.zh-CN.md">中文</a></p>
 
+## Note:
+
+This project is forked from [Naive UI](www.naiveui.com)
+
 ## Documentation
 
 [www.naiveui.com](http://www.naiveui.com)

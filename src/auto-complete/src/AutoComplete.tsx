@@ -90,6 +90,10 @@ export const autoCompleteProps = {
   value: String,
   blurAfterSelect: Boolean,
   clearAfterSelect: Boolean,
+  autoPending: {
+    type: Boolean,
+    default: true
+  },
   getShow: Function as PropType<(inputValue: string) => boolean>,
   inputProps: Object as PropType<InputHTMLAttributes>,
   renderOption: Function as PropType<RenderOption>,
@@ -225,11 +229,37 @@ export default defineComponent({
             }
           }
           break
-        case 'ArrowDown':
-          menuInstRef.value?.next()
+        case 'ArrowDown': {
+          const pendingTmNode = menuInstRef.value?.getPendingTmNode()
+          if (!pendingTmNode) {
+            menuInstRef.value?.setPendingTmNode(
+              treeMateRef.value.getFirstAvailableNode()
+            )
+          } else if (
+            treeMateRef.value?.getFirstAvailableNode()?.key ===
+            pendingTmNode.getNext({ loop: true })?.key
+          ) {
+            menuInstRef.value?.setPendingTmNode(null)
+          } else {
+            menuInstRef.value?.next()
+          }
           break
+        }
         case 'ArrowUp':
-          menuInstRef.value?.prev()
+          if (props.autoPending) {
+            menuInstRef.value?.prev()
+          } else {
+            const pendingTmNode = menuInstRef.value?.getPendingTmNode()
+            if (pendingTmNode) {
+              menuInstRef.value?.setPendingTmNode(pendingTmNode.getPrev())
+            } else {
+              menuInstRef.value?.setPendingTmNode(
+                treeMateRef.value
+                  ?.getFirstAvailableNode()
+                  ?.getPrev({ loop: true }) || null
+              )
+            }
+          }
           break
       }
     }
@@ -416,7 +446,7 @@ export default defineComponent({
                                 this.mergedTheme.peerOverrides
                                   .InternalSelectMenu
                               }
-                              auto-pending
+                              auto-pending={this.autoPending}
                               class={[
                                 `${mergedClsPrefix}-auto-complete-menu`,
                                 this.themeClass,
